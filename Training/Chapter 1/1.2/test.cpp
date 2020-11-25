@@ -7,12 +7,12 @@ PROG: test
 #include <bits/stdc++.h>
 using namespace std;
 
-const string name = "test";
+const string filename = "test";
 
 int main() {
 #ifndef LOCAL
-    freopen((name + ".in").c_str(), "r", stdin);
-    freopen((name + ".out").c_str(), "w", stdout);
+    freopen((filename + ".in").c_str(), "r", stdin);
+    freopen((filename + ".out").c_str(), "w", stdout);
 #endif
     int a, b;
     cin >> a >> b;

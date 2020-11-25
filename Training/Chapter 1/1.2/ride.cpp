@@ -7,12 +7,12 @@ PROG: ride
 #include <bits/stdc++.h>
 using namespace std;
 
-const string name = "ride";
+const string filename = "ride";
 
 int main() {
 #ifndef LOCAL
-    freopen((name + ".in").c_str(), "r", stdin);
-    freopen((name + ".out").c_str(), "w", stdout);
+    freopen((filename + ".in").c_str(), "r", stdin);
+    freopen((filename + ".out").c_str(), "w", stdout);
 #endif
     string a, b;
     int aProd = 1, bProd = 1;
