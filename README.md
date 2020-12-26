@@ -1,5 +1,9 @@
-# USACO
+# competitive-programming
 
-This is a repository containing my solutions to USACO problems. 
+This repository contains my solutions to various competitive programming problems.
 
-Click [here](https://docs.google.com/spreadsheets/d/1ZvLsrpPH6r9YltkeALDNIBiTkklweKdOnr5R9j09GjI/edit?usp=sharing) for the problem tracker.
+Allegiances (since I don't have anything else to put here) :
+
+* Operating system: [Ubuntu](https://ubuntu.com/)
+* Text editor: [Vim](https://www.vim.org)
+* Shell: [Bash](https://www.gnu.org/software/bash/)
