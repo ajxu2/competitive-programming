@@ -60,25 +60,6 @@ int main() {
             cowsell[i] += leftover * stores[j][1];
         }
     }
-    /*
-    cout << "COWS:\n";
-    for (int i = 0; i <= n; i++) {
-        cout << a[i] << "\n";
-    }
-    cout << "\nSTORES:\n";
-    for (int i = 0; i <= m; i++) {
-        cout << pstores[i][0] << " " << pstores[i][1] << "\n";
-    }
-    cout << "\nRENTS:\n";
-    for (int i = 0; i <= n; i++) {
-        cout << rent[i] << "\n";
-    }
-    cout << "\nCOWSELL:\n";
-    for (int i = 0; i <= n; i++) {
-        cout << cowsell[i] << "\n";
-    }
-    cout << "\n";
-    */
     long long ans = 0;
     for (int i = 0; i <= n; i++) {
         ans = max(ans, cowsell[i] + rent[n-i]);
