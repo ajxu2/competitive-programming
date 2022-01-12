@@ -20,6 +20,10 @@ int main() {
     skip[0] = a[0] - 12;
     for (int i = 1; i < n; i++) {
         skip[i] = a[i] - a[i-1] - 12;
+        if (skip[i] == -12) {
+            // why do a skip back when you could just not
+            skip[i] = 0;
+        }
     }
     // -12 to account for the fact that ancestor must actually be visited
     // skip the greatest number of years
