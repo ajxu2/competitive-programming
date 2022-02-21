@@ -6,9 +6,17 @@ struct DSU {
         sz.resize(n);
         fill(sz.begin(), sz.end(), 1);
     }
-    // find representative of a node
+    // find representative of a node with path compression
     int find(int x) {
-        while (parent[x] != x) x = parent[x];
+        stack<int> tmp;
+        while (parent[x] != x) {
+            tmp.push(x);
+            x = parent[x];
+        }
+        while (!tmp.empty()) {
+            parent[tmp.top()] = x;
+            tmp.pop();
+        }
         return x;
     }
     // find if two nodes are in the same CC
