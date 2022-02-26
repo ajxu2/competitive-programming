@@ -19,9 +19,9 @@ while True:
     test_input = subprocess.run([GEN], capture_output=True).stdout
     sol_output = subprocess.run([SOL], input=test_input, capture_output=True).stdout
     correct_output = subprocess.run([CORRECT], input=test_input, capture_output=True).stdout
-    if sol_output == correct_output:
+    if sol_output.decode().rstrip() == correct_output.decode().rstrip():
         print(f"Test {i} passed")
     else:
-        print(f"The test case\n{test_input.decode()}\nproduced an incorrect result.\n\nYour output:\n{sol_output.decode()}\n\nThe correct output:\n{correct_output.decode()}")
+        print(f"The test case\n{test_input.decode()}\nproduced an incorrect result.\n\nYour output:\n{sol_output.decode().rstrip()}\n\nThe correct output:\n{correct_output.decode().rstrip()}")
         break
     i += 1
