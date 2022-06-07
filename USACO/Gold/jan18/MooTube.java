@@ -3,7 +3,7 @@
 import java.util.*;
 import java.io.*;
 
-public class mootube {
+public class MooTube {
     public static void main(String[] args) throws IOException {
         FastIO io = new FastIO("mootube.in", "mootube.out");
         int n = io.nextInt(), q = io.nextInt();
