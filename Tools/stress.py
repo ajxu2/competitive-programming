@@ -6,7 +6,7 @@ parser = ArgumentParser(description="Stress tester for competitive programmers."
 parser.add_argument("your_sol", help="The name of the executable of your solution.")
 parser.add_argument("correct_sol", help="The name of the executable of the correct solution.")
 parser.add_argument("generator", help="The name of the executable of the generator.")
-parser.add_argument("--bindir", default=f"{str(Path.home()/'tmp')}", help="The directory that your executables are all located in (default: %(default)s).")
+parser.add_argument("--bindir", default=str(Path.home()/'tmp'), help="The directory that your executables are all located in (default: %(default)s).")
 
 args = parser.parse_args()
 BIN_PATH = args.bindir
