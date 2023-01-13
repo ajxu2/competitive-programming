@@ -33,10 +33,10 @@ with ZipFile(args.test_data) as f:
             i += 1
             continue
         timing = round(timing / 1000000)
-        test_output = proc.stdout.decode().strip()
+        test_output = proc.stdout.decode().strip().replace("\r\n", "\n") # screw windows
         # check if it is correct
         with f.open(f"{i}.out") as g:
-            correct_output = g.read().decode().strip()
+            correct_output = g.read().decode().strip().replace("\r\n", "\n")
         if test_output == correct_output:
             print(f"Test {i:02} {GREEN}AC: {timing} ms{END}")
         elif proc.returncode != 0:
