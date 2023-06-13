@@ -5,9 +5,11 @@ using namespace std;
 
 using ll = long long;
 
+const ll MOD = 1'000'000'007;
+ll B;
+
 struct HashedString {
     // polynomial hash; hash of a string is A_0 * B^(n-1) + A_1 * B^(n-2) + ... + A_(n-1) * B^0
-    static const ll MOD = 1000000007, B = 9973;
     static inline vector<ll> pow{1}; // powers of B
     vector<ll> hsh; // hashes of prefixes
     HashedString(string s) {
@@ -25,6 +27,9 @@ struct HashedString {
 };
 
 int main() {
+    // generate a random value of B. HACKERS, COME AT ME
+    mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+    B = rng();
     string s1, s2; cin >> s1 >> s2;
     HashedString hs1(s1), hs2(s2);
     ll hash2 = hs2.substr(0, s2.length());
