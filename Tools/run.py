@@ -13,13 +13,15 @@ def compile_file(file):
         run(["javac", file], check=True)
     elif ext == ".py":
         pass
+    elif ext == ".c":
+        run(["gcc", "-O2", "-DLOCAL", "-o", str(p.with_suffix(".out")), file], check=True)
     else:
         raise NotImplementedError
 
 def run_no_compile(file):
     p = Path(file)
     ext = p.suffix
-    if ext == ".cpp":
+    if ext == ".cpp" or ext == ".c":
         run([str(p.with_suffix(".out").absolute())])
     elif ext == ".java":
         run(["java", "-cp", str(p.parent), p.stem])
