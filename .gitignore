@@ -6,3 +6,4 @@
 *.exe
 *:tests
 *.class
+__pycache__
