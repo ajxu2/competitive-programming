@@ -1,31 +1,28 @@
 struct Segtree {
-    vector<ll> tree;
     int n;
-    // the operator used in the segtree (must be associative and commutative)
-    ll cmb(ll a, ll b) { return min(a, b); }
-    // the identity of the operator: cmb(id, x) = cmb(x, id) = x
-    const ll id = LLONG_MAX;
-    // construct segment tree with n pieces of data
+    using T = int;
+    const T id = INT_MAX;
+    T cmb(T i, T j) { return min(i, j); }
+    V<T> tree;
     Segtree(int _n) {
-        n = _n;
-        tree = vector<ll>(2*n, id);
+        n = 1;
+        while (n < _n) n *= 2;
+        tree.assign(2*n, id);
     }
-    // update value at position i to v
-    void upd(int i, ll v) {
+    void upd(int i, T v) {
         i += n; tree[i] = v;
         while (i > 1) {
             i /= 2; tree[i] = cmb(tree[2*i], tree[2*i+1]);
         }
     }
-    // query the range [a, b]
-    ll qry(int a, int b) {
-        ll res = id;
-        a += n; b += n;
-        while (a <= b) {
-            if (a % 2 == 1) res = cmb(res, tree[a++]);
-            if (b % 2 == 0) res = cmb(res, tree[b--]);
-            a /= 2; b /= 2;
+    T qry(int i, int j) {
+        T ra = id, rb = id;
+        i += n, j += n;
+        while (i <= j) {
+            if (i % 2 == 1) ra = cmb(ra, tree[i++]);
+            if (j % 2 == 0) rb = cmb(tree[j--], rb);
+            i /= 2, j /= 2;
         }
-        return res;
+        return cmb(ra, rb);
     }
 };

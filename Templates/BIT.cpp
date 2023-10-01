@@ -1,34 +1,31 @@
 struct BIT {
-    vector<ll> tree;
     int n;
-    // construct BIT with n pieces of data
+    V<ll> a, tree;
     BIT(int _n) {
         n = _n;
-        tree = vector<ll>(n+1, 0);
+        a.assign(n, 0);
+        tree.assign(n, 0);
     }
-    // increase value at position i by v (1-indexed)
     void add(int i, ll v) {
-        while (i <= n) {
+        a[i] += v;
+        while (i < n) {
             tree[i] += v;
-            i += i & -i;
+            i |= i + 1;
         }
     }
-    // update value at position i to v (1-indexed)
     void upd(int i, ll v) {
-        ll d = v - qry(i, i);
+        ll d = v - a[i];
         add(i, d);
     }
-    // query the sum from [1, a] (1-indexed)
-    ll qry(int a) {
+    ll qry(int i) {
         ll res = 0;
-        while (a > 0) {
-            res += tree[a];
-            a -= a & -a;
+        while (i >= 0) {
+            res += tree[i];
+            i &= i + 1; i--;
         }
         return res;
     }
-    // query the sum from [a, b] (a and b are 1-indexed)
-    ll qry(int a, int b) {
-        return qry(b) - qry(a-1);
+    ll qry(int i, int j) {
+        return qry(j) - qry(i-1);
     }
 };
