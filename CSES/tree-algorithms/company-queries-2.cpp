@@ -26,6 +26,7 @@ void dfs(int v) {
 }
 
 int main() {
+    cin.tie(0)->sync_with_stdio(0);
     int n, q; cin >> n >> q;
     up = vector<vector<int>>(n+1, vector<int>(19, 1));
     adj = vector<vector<int>>(n+1);

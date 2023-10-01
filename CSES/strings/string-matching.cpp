@@ -31,6 +31,10 @@ int main() {
     mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
     B = rng();
     string s1, s2; cin >> s1 >> s2;
+    if (s2.length() > s1.length()) {
+        cout << "0\n";
+        return 0;
+    }
     HashedString hs1(s1), hs2(s2);
     ll hash2 = hs2.substr(0, s2.length());
     int ans = 0;
