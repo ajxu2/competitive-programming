@@ -11,15 +11,6 @@ using Pair = array<int, 2>;
 Pair operator+(const Pair& a, const Pair& b) { return {a[0] + b[0], a[1] + b[1]}; }
 Pair operator-(const Pair& a, const Pair& b) { return {a[0] - b[0], a[1] - b[1]}; }
 
-struct Query {
-    int l, r, i;
-    Pair search;
-    bool ans;
-    Query(int _l, int _r, Pair _search, int _i) {
-        l = _l, r = _r, search = _search, i = _i;
-    }
-};
-
 int main() {
     cin.tie(0)->sync_with_stdio(0);
     int n, q; cin >> n >> q;
