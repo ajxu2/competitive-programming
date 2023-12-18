@@ -34,7 +34,7 @@ void solve() {
         whar[tmp[0]][0]++; whar[tmp[1]][1]++;
     }
     V<int> d(31);
-    for (int i = 0; i < 30; i++) d[i] = whar[i][0] - whar[i][1];
+    for (int i = 0; i < 31; i++) d[i] = whar[i][0] - whar[i][1];
     for (int i = 0; i < 30; i++) {
         if (d[i] % 2 == 1) {
             cout << "No\n";
