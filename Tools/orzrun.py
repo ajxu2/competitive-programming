@@ -42,8 +42,9 @@ def main():
     tests_file = p.with_suffix(p.suffix + ':tests')
     if not tests_file.is_file():
         print('No tests file found, generating one.')
+        test_cases = fetch_test_cases(p.stem.removeprefix('j_')) # removeprefix for java programs
         with tests_file.open('w') as f:
-            json.dump(fetch_test_cases(p.stem), f)
+            json.dump(test_cases, f)
     with tests_file.open() as f:
         tests = json.load(f)
 
