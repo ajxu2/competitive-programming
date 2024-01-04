@@ -1,34 +1,20 @@
-static class BIT {
-    private long[] tree;
+class BIT {
     public int n;
-    // construct BIT with n pieces of data
+    public long[] a, tree;
     public BIT(int n) {
         this.n = n;
-        tree = new long[n+1];
+        a = new long[n];
+        tree = new long[n];
     }
-    // increase value at position i by v (1-indexed)
     public void add(int i, long v) {
-        while (i <= n) {
-            tree[i] += v;
-            i += i & -i;
-        }
+        a[i] += v;
+        for (; i < n; i |= i + 1) tree[i] += v;
     }
-    // update value at position i to v (1-indexed)
-    public void upd(int i, long v) {
-        long d = v - qry(i, i);
-        add(i, d);
-    }
-    // query the sum from [1, a] (1-indexed)
-    public long qry(int a) {
+    public void upd(int i, long v) { add(i, v - a[i]); }
+    public long qry(int i) {
         long res = 0;
-        while (a > 0) {
-            res += tree[a];
-            a -= a & -a;
-        }
+        for (; i >= 0; i = (i & i+1) - 1) res += tree[i];
         return res;
     }
-    // query the sum from [a, b] (a and b are 1-indexed)
-    public long qry(int a, int b) {
-        return qry(b) - qry(a-1);
-    }
+    public long qry(int i, int j) { return qry(j) - qry(i-1); }
 }
