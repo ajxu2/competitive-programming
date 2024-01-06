@@ -17,4 +17,17 @@ class BIT {
         return res;
     }
     public long qry(int i, int j) { return qry(j) - qry(i-1); }
+    public int lower_bound(long v) {
+        // returns first x st qry(x) >= v
+        // or n if no such elements exist
+        int res = 0; long sofar = 0;
+        for (int i = 30; i >= 0; i--) {
+            if (res + (1 << i) > n) continue;
+            if (sofar + tree[res+(1<<i)-1] < v) {
+                res += 1 << i;
+                sofar += tree[res-1];
+            }
+        }
+        return res;
+    }
 }
