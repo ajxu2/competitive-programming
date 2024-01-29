@@ -13,21 +13,21 @@ class BIT {
     public void upd(int i, long v) { add(i, v - a[i]); }
     public long qry(int i) {
         long res = 0;
-        for (; i >= 0; i = (i & i+1) - 1) res += tree[i];
+        for (; i >= 0; i &= i + 1, i--) res += tree[i];
         return res;
     }
     public long qry(int i, int j) { return qry(j) - qry(i-1); }
     public int lower_bound(long v) {
         // returns first x st qry(x) >= v
         // or n if no such elements exist
-        int res = 0; long sofar = 0;
+        int res = -1; long sofar = 0;
         for (int i = 30; i >= 0; i--) {
-            if (res + (1 << i) > n) continue;
-            if (sofar + tree[res+(1<<i)-1] < v) {
+            if (res + (1 << i) >= n) continue;
+            if (sofar + tree[res+(1<<i)] < v) {
                 res += 1 << i;
-                sofar += tree[res-1];
+                sofar += tree[res];
             }
         }
-        return res;
+        return res + 1;
     }
 }
