@@ -1,86 +1,61 @@
-// created: 01-27-2024 Sat 11:39 PM
+// created: 02-18-2024 Sun 12:41 PM
 
 import java.util.*;
 import java.io.*;
 
-public class RangeUpdatesAndSums {
+public class ForestQueries2 {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
         int n = io.nextInt(), q = io.nextInt();
-        long[] a = new long[n];
-        for (int i = 0; i < n; i++) a[i] = io.nextLong();
-        LazySeg s = new LazySeg(a);
-        for (int i = 0; i < q; i++) {
+        boolean[][] a = new boolean[n][n];
+        BIT2D b = new BIT2D(n, n);
+        for (int i = 0; i < n; i++) {
+            String tmp = io.next();
+            for (int j = 0; j < n; j++) {
+                if (tmp.charAt(j) == '*') {
+                    b.add(i, j, 1);
+                    a[i][j] = true;
+                }
+            }
+        }
+        while (q --> 0) {
             int t = io.nextInt();
-            if (t == 1) s.updAdd(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else if (t == 2) s.updSet(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else io.println(s.qry(io.nextInt() - 1, io.nextInt() - 1));
+            if (t == 1) {
+                int i = io.nextInt() - 1, j = io.nextInt() - 1;
+                if (a[i][j]) b.add(i, j, -1);
+                else b.add(i, j, 1);
+                a[i][j] = !a[i][j];
+            } else {
+                int i1 = io.nextInt() - 1, j1 = io.nextInt() - 1, i2 = io.nextInt() - 1, j2 = io.nextInt() - 1;
+                io.println(b.qry(i2, j2) - b.qry(i1-1, j2) - b.qry(i2, j1-1) + b.qry(i1-1, j1-1));
+            }
         }
         io.close();
     }
 }
 
-class LazySeg {
-    int l, r;
-    long v = 0, lzAdd = 0, lzSet = 0;
-    LazySeg left, right;
-    public LazySeg(int l, int r, long[] a) {
-        this.l = l; this.r = r;
-        if (l == r) {
-            v = a[l];
-            return;
-        }
-        int mid = (l + r) / 2;
-        left = new LazySeg(l, mid, a); right = new LazySeg(mid + 1, r, a);
-        pull();
+class BIT2D {
+    public int n, m;
+    public long[][] tree;
+    public BIT2D(int n, int m) {
+        this.n = n; this.m = m;
+        tree = new long[n][m];
     }
-    public LazySeg(long[] a) { this(0, a.length - 1, a); }
-    public void push() {
-        if (l == r) {
-            if (lzSet != 0) v = lzSet;
-            v += lzAdd;
-            lzSet = 0; lzAdd = 0;
-            return;
+    public void add(int i, int j, long v) {
+        for (int _i = i; _i < n; _i |= _i + 1) {
+            for (int _j = j; _j < n; _j |= _j + 1) {
+                tree[_i][_j] += v;
+            }
         }
-        if (lzSet != 0) {
-            v = (r - l + 1) * lzSet;
-            left.lzSet = lzSet; left.lzAdd = 0;
-            right.lzSet = lzSet; right.lzAdd = 0;
-            lzSet = 0;
-        }
-        v += (r - l + 1) * lzAdd;
-        left.lzAdd += lzAdd; right.lzAdd += lzAdd;
-        lzAdd = 0;
     }
-    public void pull() { v = left.v + right.v; }
-    public long qry(int ll, int rr) {
-        push();
-        if (ll <= l && r <= rr) return v;
-        if (r < ll || rr < l) return 0;
-        return left.qry(ll, rr) + right.qry(ll, rr);
-    }
-    public void updAdd(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzAdd += x;
-            push();
-            return;
+    public long qry(int i, int j) {
+        long res = 0;
+        for (int _i = i; _i >= 0; _i &= _i + 1, _i--) {
+            for (int _j = j; _j >= 0; _j &= _j + 1, _j--) {
+                res += tree[_i][_j];
+            }
         }
-        push();
-        if (r < ll || rr < l) return;
-        left.updAdd(ll, rr, x); right.updAdd(ll, rr, x);
-        pull();
-    }
-    public void updSet(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzSet = x;
-            lzAdd = 0;
-            push();
-            return;
-        }
-        push();
-        if (r < ll || rr < l) return;
-        left.updSet(ll, rr, x); right.updSet(ll, rr, x);
-        pull();
+        return res;
     }
 }
 
@@ -148,3 +123,4 @@ class FastIO extends PrintWriter {
     }
     public double nextDouble() { return Double.parseDouble(next()); }
 }
+

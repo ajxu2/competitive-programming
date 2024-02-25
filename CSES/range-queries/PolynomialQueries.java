@@ -1,86 +1,86 @@
-// created: 01-27-2024 Sat 11:39 PM
+// created: 02-21-2024 Wed 12:11 PM
 
 import java.util.*;
 import java.io.*;
 
-public class RangeUpdatesAndSums {
+public class PolynomialQueries {
     static FastIO io = new FastIO();
+    static long[] diff(long[] a) {
+        // difference array
+        long[] res = new long[a.length];
+        res[0] = a[0];
+        for (int i = 1; i < a.length; i++) res[i] = a[i] - a[i-1];
+        return res;
+    }
     public static void main(String[] args) throws IOException {
         int n = io.nextInt(), q = io.nextInt();
         long[] a = new long[n];
-        for (int i = 0; i < n; i++) a[i] = io.nextLong();
-        LazySeg s = new LazySeg(a);
-        for (int i = 0; i < q; i++) {
+        for (int i = 0; i < n; i++) a[i] = io.nextInt();
+        long[] dd = diff(diff(a));
+        BITrange b = new BITrange(n+2);
+        for (int i = 0; i < n; i++) b.add(i, dd[i]);
+        while (q --> 0) {
             int t = io.nextInt();
-            if (t == 1) s.updAdd(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else if (t == 2) s.updSet(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else io.println(s.qry(io.nextInt() - 1, io.nextInt() - 1));
+            int l = io.nextInt() - 1, r = io.nextInt() - 1;
+            if (t == 1) {
+                b.add(l, 1); b.add(r + 1, -(r - l + 2)); b.add(r + 2, r - l + 1);
+            } else {
+                io.println(b.qry(r) - b.qry(l - 1));
+            }
         }
         io.close();
     }
 }
 
-class LazySeg {
-    int l, r;
-    long v = 0, lzAdd = 0, lzSet = 0;
-    LazySeg left, right;
-    public LazySeg(int l, int r, long[] a) {
-        this.l = l; this.r = r;
-        if (l == r) {
-            v = a[l];
-            return;
-        }
-        int mid = (l + r) / 2;
-        left = new LazySeg(l, mid, a); right = new LazySeg(mid + 1, r, a);
-        pull();
+class BIT {
+    public int n;
+    public long[] a, tree;
+    public BIT(int n) {
+        this.n = n;
+        a = new long[n];
+        tree = new long[n];
     }
-    public LazySeg(long[] a) { this(0, a.length - 1, a); }
-    public void push() {
-        if (l == r) {
-            if (lzSet != 0) v = lzSet;
-            v += lzAdd;
-            lzSet = 0; lzAdd = 0;
-            return;
-        }
-        if (lzSet != 0) {
-            v = (r - l + 1) * lzSet;
-            left.lzSet = lzSet; left.lzAdd = 0;
-            right.lzSet = lzSet; right.lzAdd = 0;
-            lzSet = 0;
-        }
-        v += (r - l + 1) * lzAdd;
-        left.lzAdd += lzAdd; right.lzAdd += lzAdd;
-        lzAdd = 0;
+    public void add(int i, long v) {
+        a[i] += v;
+        for (; i < n; i |= i + 1) tree[i] += v;
     }
-    public void pull() { v = left.v + right.v; }
-    public long qry(int ll, int rr) {
-        push();
-        if (ll <= l && r <= rr) return v;
-        if (r < ll || rr < l) return 0;
-        return left.qry(ll, rr) + right.qry(ll, rr);
+    public void upd(int i, long v) { add(i, v - a[i]); }
+    public long qry(int i) {
+        long res = 0;
+        for (; i >= 0; i &= i + 1, i--) res += tree[i];
+        return res;
     }
-    public void updAdd(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzAdd += x;
-            push();
-            return;
+    public long qry(int i, int j) { return qry(j) - qry(i-1); }
+    public int lower_bound(long v) {
+        // returns first x st qry(x) >= v
+        // or n if no such elements exist
+        int res = -1; long sofar = 0;
+        for (int i = 30; i >= 0; i--) {
+            if (res + (1 << i) >= n) continue;
+            if (sofar + tree[res+(1<<i)] < v) {
+                res += 1 << i;
+                sofar += tree[res];
+            }
         }
-        push();
-        if (r < ll || rr < l) return;
-        left.updAdd(ll, rr, x); right.updAdd(ll, rr, x);
-        pull();
+        return res + 1;
     }
-    public void updSet(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzSet = x;
-            lzAdd = 0;
-            push();
-            return;
-        }
-        push();
-        if (r < ll || rr < l) return;
-        left.updSet(ll, rr, x); right.updSet(ll, rr, x);
-        pull();
+}
+
+class BITrange {
+    // stores fenwick trees for b, b*i, b*i*i
+    BIT b, bi, bii;
+    public BITrange(int n) {
+        b = new BIT(n);
+        bi = new BIT(n);
+        bii = new BIT(n);
+    }
+    public void add(int i, long v) {
+        b.add(i, v);
+        bi.add(i, v * i);
+        bii.add(i, v * i * i);
+    }
+    public long qry(int i) {
+        return (((long)i * i + 3 * i + 2) * b.qry(i) - (2 * i + 3) * bi.qry(i) + bii.qry(i)) / 2;
     }
 }
 
@@ -148,3 +148,4 @@ class FastIO extends PrintWriter {
     }
     public double nextDouble() { return Double.parseDouble(next()); }
 }
+

@@ -1,52 +1,63 @@
 class LazySeg {
-    int n;
-    long[] tree, lzAdd;
-    int[] l, r;
-    public LazySeg(int n) {
-        this.n = 1;
-        while (this.n < n) this.n <<= 1;
-        tree = new long[this.n << 1];
-        lzAdd = new long[this.n << 1];
-        l = new int[this.n << 1];
-        r = new int[this.n << 1];
-        for (int i = 0; i < this.n; i++) {
-            l[i + this.n] = i; r[i + this.n] = i;
-        }
-        for (int i = this.n - 1; i >= 1; i--) {
-            l[i] = l[i << 1]; r[i] = r[i << 1 ^ 1];
-        }
-    }
-    public LazySeg(long[] a) {
-        this(a.length);
-        for (int i = 0; i < a.length; i++) tree[i + n] = a[i];
-        for (int i = n - 1; i >= 1; i--) pull(i);
-    }
-    public void push(int node) {
-        tree[node] += (r[node] - l[node] + 1) * lzAdd[node];
-        if (node < n) {
-            lzAdd[node << 1] += lzAdd[node];
-            lzAdd[node << 1 ^ 1] += lzAdd[node];
-        }
-        lzAdd[node] = 0;
-    }
-    public void pull(int node) { tree[node] = tree[node << 1] + tree[node << 1 ^ 1]; }
-    public long qry(int ll, int rr, int node) {
-        push(node);
-        if (ll <= l[node] && r[node] <= rr) return tree[node];
-        if (r[node] < ll || rr < l[node]) return 0;
-        return qry(ll, rr, node << 1) + qry(ll, rr, node << 1 ^ 1);
-    }
-    public void updAdd(int ll, int rr, long x, int node) {
-        push(node);
-        if (ll <= l[node] && r[node] <= rr) {
-            lzAdd[node] += x;
-            push(node);
+    int l, r;
+    long v = 0, lzAdd = 0, lzSet = 0;
+    LazySeg left, right;
+    public LazySeg(int l, int r, long[] a) {
+        this.l = l; this.r = r;
+        if (l == r) {
+            v = a[l];
             return;
         }
-        if (r[node] < ll || rr < l[node]) return;
-        updAdd(ll, rr, x, node << 1); updAdd(ll, rr, x, node << 1 ^ 1);
-        pull(node);
+        int mid = (l + r) / 2;
+        left = new LazySeg(l, mid, a); right = new LazySeg(mid + 1, r, a);
+        pull();
     }
-    public long qry(int ll, int rr) { return qry(ll, rr, 1); }
-    public void updAdd(int ll, int rr, long x) { updAdd(ll, rr, x, 1); }
+    public LazySeg(long[] a) { this(0, a.length - 1, a); }
+    public void push() {
+        if (l == r) {
+            if (lzSet != 0) v = lzSet;
+            v += lzAdd;
+            lzSet = 0; lzAdd = 0;
+            return;
+        }
+        if (lzSet != 0) {
+            v = (r - l + 1) * lzSet;
+            left.lzSet = lzSet; left.lzAdd = 0;
+            right.lzSet = lzSet; right.lzAdd = 0;
+            lzSet = 0;
+        }
+        v += (r - l + 1) * lzAdd;
+        left.lzAdd += lzAdd; right.lzAdd += lzAdd;
+        lzAdd = 0;
+    }
+    public void pull() { v = left.v + right.v; }
+    public long qry(int ll, int rr) {
+        push();
+        if (ll <= l && r <= rr) return v;
+        if (r < ll || rr < l) return 0;
+        return left.qry(ll, rr) + right.qry(ll, rr);
+    }
+    public void updAdd(int ll, int rr, long x) {
+        if (ll <= l && r <= rr) {
+            lzAdd += x;
+            push();
+            return;
+        }
+        push();
+        if (r < ll || rr < l) return;
+        left.updAdd(ll, rr, x); right.updAdd(ll, rr, x);
+        pull();
+    }
+    public void updSet(int ll, int rr, long x) {
+        if (ll <= l && r <= rr) {
+            lzSet = x;
+            lzAdd = 0;
+            push();
+            return;
+        }
+        push();
+        if (r < ll || rr < l) return;
+        left.updSet(ll, rr, x); right.updSet(ll, rr, x);
+        pull();
+    }
 }

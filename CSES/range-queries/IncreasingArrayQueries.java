@@ -1,79 +1,89 @@
-// created: 01-27-2024 Sat 11:39 PM
+// created: 02-24-2024 Sat 05:23 PM
 
 import java.util.*;
 import java.io.*;
 
-public class RangeUpdatesAndSums {
+public class IncreasingArrayQueries {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
         int n = io.nextInt(), q = io.nextInt();
         long[] a = new long[n];
-        for (int i = 0; i < n; i++) a[i] = io.nextLong();
-        LazySeg s = new LazySeg(a);
+        for (int i = 0; i < n; i++) a[i] = io.nextInt();
+        LazySeg s = new LazySeg(n);
+        PrefixSum p = new PrefixSum(a);
+        List<Pair>[] queries = new List[n];
+        for (int i = 0; i < n; i++) queries[i] = new ArrayList<>();
+        long[] ans = new long[q];
         for (int i = 0; i < q; i++) {
-            int t = io.nextInt();
-            if (t == 1) s.updAdd(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else if (t == 2) s.updSet(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else io.println(s.qry(io.nextInt() - 1, io.nextInt() - 1));
+            int l = io.nextInt() - 1, r = io.nextInt() - 1;
+            queries[l].add(new Pair(r, i));
         }
+        for (int i = n - 1; i >= 0; i--) {
+            int r = s.lower_bound(a[i]) - 1;
+            if (i <= r) s.updSet(i, r, a[i]);
+            for (Pair j : queries[i]) ans[j.s] = s.qrySum(i, j.f) - p.qry(i, j.f);
+        }
+        for (long i : ans) io.println(i);
         io.close();
+    }
+}
+
+class Pair {
+    int f, s;
+    public Pair(int f, int s) {
+        this.f = f; this.s = s;
+    }
+}
+
+class PrefixSum {
+    long[] p;
+    public PrefixSum(long[] a) {
+        p = Arrays.copyOf(a, a.length);
+        for (int i = 1; i < a.length; i++) p[i] += p[i-1];
+    }
+    public long qry(int l, int r) {
+        return l == 0 ? p[r] : p[r] - p[l-1];
     }
 }
 
 class LazySeg {
     int l, r;
-    long v = 0, lzAdd = 0, lzSet = 0;
+    long vAdd = 0, vMax = 0, lzSet = 0;
     LazySeg left, right;
-    public LazySeg(int l, int r, long[] a) {
+    public LazySeg(int l, int r) {
         this.l = l; this.r = r;
-        if (l == r) {
-            v = a[l];
-            return;
-        }
+        if (l == r) return;
         int mid = (l + r) / 2;
-        left = new LazySeg(l, mid, a); right = new LazySeg(mid + 1, r, a);
-        pull();
+        left = new LazySeg(l, mid); right = new LazySeg(mid + 1, r);
     }
-    public LazySeg(long[] a) { this(0, a.length - 1, a); }
+    public LazySeg(int n) { this(0, n - 1); }
     public void push() {
         if (l == r) {
-            if (lzSet != 0) v = lzSet;
-            v += lzAdd;
-            lzSet = 0; lzAdd = 0;
+            if (lzSet != 0) {
+                vAdd = lzSet; vMax = lzSet;
+            }
+            lzSet = 0;
             return;
         }
         if (lzSet != 0) {
-            v = (r - l + 1) * lzSet;
-            left.lzSet = lzSet; left.lzAdd = 0;
-            right.lzSet = lzSet; right.lzAdd = 0;
+            vAdd = (r - l + 1) * lzSet; vMax = lzSet;
+            left.lzSet = lzSet; right.lzSet = lzSet;
             lzSet = 0;
         }
-        v += (r - l + 1) * lzAdd;
-        left.lzAdd += lzAdd; right.lzAdd += lzAdd;
-        lzAdd = 0;
     }
-    public void pull() { v = left.v + right.v; }
-    public long qry(int ll, int rr) {
+    public void pull() {
+        vAdd = left.vAdd + right.vAdd;
+        vMax = Math.max(left.vMax, right.vMax);
+    }
+    public long qrySum(int ll, int rr) {
         push();
-        if (ll <= l && r <= rr) return v;
+        if (ll <= l && r <= rr) return vAdd;
         if (r < ll || rr < l) return 0;
-        return left.qry(ll, rr) + right.qry(ll, rr);
-    }
-    public void updAdd(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzAdd += x;
-            push();
-            return;
-        }
-        push();
-        if (r < ll || rr < l) return;
-        left.updAdd(ll, rr, x); right.updAdd(ll, rr, x);
-        pull();
+        return left.qrySum(ll, rr) + right.qrySum(ll, rr);
     }
     public void updSet(int ll, int rr, long x) {
         if (ll <= l && r <= rr) {
             lzSet = x;
-            lzAdd = 0;
             push();
             return;
         }
@@ -81,6 +91,14 @@ class LazySeg {
         if (r < ll || rr < l) return;
         left.updSet(ll, rr, x); right.updSet(ll, rr, x);
         pull();
+    }
+    public int lower_bound(long x) {
+        // find first index >= x, assuming array is monotonic
+        if (l == r) return l;
+        left.push(); right.push();
+        if (right.vMax < x) return r + 1;
+        else if (left.vMax < x) return right.lower_bound(x);
+        else return left.lower_bound(x);
     }
 }
 

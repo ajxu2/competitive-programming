@@ -1,86 +1,56 @@
-// created: 01-27-2024 Sat 11:39 PM
+// created: 02-18-2024 Sun 04:43 PM
 
 import java.util.*;
 import java.io.*;
 
-public class RangeUpdatesAndSums {
+public class SubarraySumQueries {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
-        int n = io.nextInt(), q = io.nextInt();
-        long[] a = new long[n];
-        for (int i = 0; i < n; i++) a[i] = io.nextLong();
-        LazySeg s = new LazySeg(a);
-        for (int i = 0; i < q; i++) {
-            int t = io.nextInt();
-            if (t == 1) s.updAdd(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else if (t == 2) s.updSet(io.nextInt() - 1, io.nextInt() - 1, io.nextInt());
-            else io.println(s.qry(io.nextInt() - 1, io.nextInt() - 1));
+        int n = io.nextInt(), m = io.nextInt();
+        State[] a = new State[n];
+        for (int i = 0; i < n; i++) {
+            int x = io.nextInt(), xp = Math.max(x, 0);
+            a[i] = new State(x, xp, xp, xp);
+        }
+        Segtree s = new Segtree(a);
+        while (m --> 0) {
+            int k = io.nextInt() - 1, x = io.nextInt(), xp = Math.max(x, 0);
+            s.upd(k, new State(x, xp, xp, xp));
+            io.println(s.tree[1].ans);
         }
         io.close();
     }
 }
 
-class LazySeg {
-    int l, r;
-    long v = 0, lzAdd = 0, lzSet = 0;
-    LazySeg left, right;
-    public LazySeg(int l, int r, long[] a) {
-        this.l = l; this.r = r;
-        if (l == r) {
-            v = a[l];
-            return;
-        }
-        int mid = (l + r) / 2;
-        left = new LazySeg(l, mid, a); right = new LazySeg(mid + 1, r, a);
-        pull();
+class Segtree {
+    public int n;
+    public State[] tree;
+    public Segtree(int n) {
+        this.n = 1;
+        while (this.n < n) this.n <<= 1;
+        tree = new State[this.n << 1];
+        Arrays.fill(tree, State.id);
     }
-    public LazySeg(long[] a) { this(0, a.length - 1, a); }
-    public void push() {
-        if (l == r) {
-            if (lzSet != 0) v = lzSet;
-            v += lzAdd;
-            lzSet = 0; lzAdd = 0;
-            return;
-        }
-        if (lzSet != 0) {
-            v = (r - l + 1) * lzSet;
-            left.lzSet = lzSet; left.lzAdd = 0;
-            right.lzSet = lzSet; right.lzAdd = 0;
-            lzSet = 0;
-        }
-        v += (r - l + 1) * lzAdd;
-        left.lzAdd += lzAdd; right.lzAdd += lzAdd;
-        lzAdd = 0;
+    public Segtree(State[] a) {
+        this(a.length);
+        for (int i = 0; i < a.length; i++) tree[i + n] = a[i];
+        for (int i = n - 1; i >= 1; i--) tree[i] = tree[i << 1].cmb(tree[i << 1 ^ 1]);
     }
-    public void pull() { v = left.v + right.v; }
-    public long qry(int ll, int rr) {
-        push();
-        if (ll <= l && r <= rr) return v;
-        if (r < ll || rr < l) return 0;
-        return left.qry(ll, rr) + right.qry(ll, rr);
+    public void upd(int i, State x) {
+        i += n;
+        tree[i] = x; i >>= 1;
+        for (; i > 0; i >>= 1) tree[i] = tree[i << 1].cmb(tree[i << 1 ^ 1]);
     }
-    public void updAdd(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzAdd += x;
-            push();
-            return;
-        }
-        push();
-        if (r < ll || rr < l) return;
-        left.updAdd(ll, rr, x); right.updAdd(ll, rr, x);
-        pull();
+}
+
+class State {
+    long sum, maxp, maxs, ans;
+    public State(long sum, long maxp, long maxs, long ans) {
+        this.sum = sum; this.maxp = maxp; this.maxs = maxs; this.ans = ans;
     }
-    public void updSet(int ll, int rr, long x) {
-        if (ll <= l && r <= rr) {
-            lzSet = x;
-            lzAdd = 0;
-            push();
-            return;
-        }
-        push();
-        if (r < ll || rr < l) return;
-        left.updSet(ll, rr, x); right.updSet(ll, rr, x);
-        pull();
+    static final State id = new State(0, 0, 0, 0);
+    public State cmb(State o) {
+        return new State(sum + o.sum, Math.max(maxp, sum + o.maxp), Math.max(o.maxs, o.sum + maxs), Math.max(Math.max(ans, o.ans), maxs + o.maxp));
     }
 }
 
@@ -148,3 +118,4 @@ class FastIO extends PrintWriter {
     }
     public double nextDouble() { return Double.parseDouble(next()); }
 }
+
