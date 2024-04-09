@@ -1,53 +1,62 @@
-// created: 04-03-2024 Wed 06:28 PM
+// created: 04-07-2024 Sun 09:25 PM
 
 import java.util.*;
 import java.io.*;
 
-public class ConvexHull {
+public class LongestPalindrome {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
-        int n = io.nextInt();
-        Vec[] a = new Vec[n];
-        for (int i = 0; i < n; i++) a[i] = new Vec(io.nextInt(), io.nextInt());
-        Arrays.sort(a, new Comparator<Vec>() {
-            public int compare(Vec q, Vec w) {
-                if (q.x == w.x) return Long.compare(q.y, w.y);
-                return Long.compare(q.x, w.x);
+        String s = io.next();
+        StringBuilder whar = new StringBuilder();
+        for (int i = 0; i < s.length() - 1; i++) whar.append(s.charAt(i)).append('#');
+        whar.append(s.charAt(s.length() - 1));
+        HashedString hs1 = new HashedString(whar.toString()), hs2 = new HashedString(whar.reverse().toString());
+        int ansidx = -1, anslen = -1;
+        for (int i = 0; i < hs1.length(); i++) {
+            // palindrome middle is this index
+            // find last true such that is palindrome
+            int l = 1, r = Math.min(i + 1, hs1.length() - i);
+            while (l < r) {
+                int mid = (l + r + 1) >> 1;
+                int ii = hs1.length() - 1 - i;
+                if (hs1.substring(i, i + mid) == hs2.substring(ii, ii + mid)) l = mid;
+                else r = mid - 1;
             }
-        });
-        boolean[] hull = new boolean[n];
-        LinkedList<Integer> stack = new LinkedList<>();
-        // upper hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) < 0) stack.removeFirst();
-            stack.addFirst(i);
+            if (l > anslen) {
+                anslen = l;
+                ansidx = i;
+            }
         }
-        for (int i : stack) hull[i] = true;
-        stack = new LinkedList<>();
-        // lower hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) > 0) stack.removeFirst();
-            stack.addFirst(i);
-        }
-        for (int i : stack) hull[i] = true;
-        List<Integer> ans = new ArrayList<>();
-        for (int i = 0; i < n; i++) if (hull[i]) ans.add(i);
-        StringBuilder out = new StringBuilder();
-        out.append(ans.size()).append('\n');
-        for (int i : ans) out.append(a[i].x).append(' ').append(a[i].y).append('\n');
-        io.print(out);
+        String ans = whar.reverse().toString().substring(ansidx - anslen + 1, ansidx + anslen);
+        whar = new StringBuilder();
+        for (char i : ans.toCharArray()) if (i != '#') whar.append(i);
+        io.println(whar);
         io.close();
     }
 }
 
-class Vec {
-    public long x, y;
-    public Vec(long x, long y) {
-        this.x = x; this.y = y;
+class HashedString {
+    static final int MOD = 2_000_000_011, p = new Random().nextInt(MOD - 100) + 100;
+    static long[] pow = new long[]{1};
+    int n; long[] hsh;
+    public HashedString(String s) {
+        n = s.length();
+        hsh = new long[n];
+        while (pow.length < n) {
+            pow = Arrays.copyOf(pow, pow.length << 1);
+            for (int i = pow.length >> 1; i < pow.length; i++) pow[i] = pow[i-1] * p % MOD;
+        }
+        if (n == 0) return;
+        hsh[0] = s.charAt(0);
+        for (int i = 1; i < n; i++) hsh[i] = (hsh[i-1] * p + s.charAt(i)) % MOD;
     }
-    public Vec sub(Vec o) { return new Vec(x - o.x, y - o.y); }
-    public long cross(Vec o) { return x * o.y - y * o.x; }
-    public long cross(Vec o1, Vec o2) { return o1.sub(this).cross(o2.sub(this)); }
+    public int length() { return n; }
+    public long substring(int l, int r) {
+        if (l == 0) return hsh[r-1];
+        long res = (hsh[r-1] - hsh[l-1] * pow[r-l]) % MOD;
+        return res < 0 ? res + MOD : res;
+    }
+    public long substring(int l) { return substring(l, n); }
 }
 
 // credits to usaco.guide team for this template

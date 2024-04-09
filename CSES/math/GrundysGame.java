@@ -1,53 +1,19 @@
-// created: 04-03-2024 Wed 06:28 PM
+// created: 04-04-2024 Thu 08:19 PM
 
 import java.util.*;
 import java.io.*;
 
-public class ConvexHull {
+public class GrundysGame {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
-        int n = io.nextInt();
-        Vec[] a = new Vec[n];
-        for (int i = 0; i < n; i++) a[i] = new Vec(io.nextInt(), io.nextInt());
-        Arrays.sort(a, new Comparator<Vec>() {
-            public int compare(Vec q, Vec w) {
-                if (q.x == w.x) return Long.compare(q.y, w.y);
-                return Long.compare(q.x, w.x);
-            }
-        });
-        boolean[] hull = new boolean[n];
-        LinkedList<Integer> stack = new LinkedList<>();
-        // upper hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) < 0) stack.removeFirst();
-            stack.addFirst(i);
-        }
-        for (int i : stack) hull[i] = true;
-        stack = new LinkedList<>();
-        // lower hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) > 0) stack.removeFirst();
-            stack.addFirst(i);
-        }
-        for (int i : stack) hull[i] = true;
-        List<Integer> ans = new ArrayList<>();
-        for (int i = 0; i < n; i++) if (hull[i]) ans.add(i);
+        // https://oeis.org/A036685
+        List<Integer> terminal = List.of(1, 2, 4, 7, 10, 20, 23, 26, 50, 53, 270, 273, 276, 282, 285, 288, 316, 334, 337, 340, 346, 359, 362, 365, 386, 389, 392, 566, 630, 633, 636, 639, 673, 676, 682, 685, 923, 926, 929, 932, 1222);
+        int T = io.nextInt();
         StringBuilder out = new StringBuilder();
-        out.append(ans.size()).append('\n');
-        for (int i : ans) out.append(a[i].x).append(' ').append(a[i].y).append('\n');
+        while (T --> 0) out.append(terminal.contains(io.nextInt()) ? "second" : "first").append('\n');
         io.print(out);
         io.close();
     }
-}
-
-class Vec {
-    public long x, y;
-    public Vec(long x, long y) {
-        this.x = x; this.y = y;
-    }
-    public Vec sub(Vec o) { return new Vec(x - o.x, y - o.y); }
-    public long cross(Vec o) { return x * o.y - y * o.x; }
-    public long cross(Vec o1, Vec o2) { return o1.sub(this).cross(o2.sub(this)); }
 }
 
 // credits to usaco.guide team for this template

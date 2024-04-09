@@ -1,53 +1,22 @@
-// created: 04-03-2024 Wed 06:28 PM
+// created: 04-07-2024 Sun 09:02 PM
 
 import java.util.*;
 import java.io.*;
 
-public class ConvexHull {
+public class AnotherGame {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
-        int n = io.nextInt();
-        Vec[] a = new Vec[n];
-        for (int i = 0; i < n; i++) a[i] = new Vec(io.nextInt(), io.nextInt());
-        Arrays.sort(a, new Comparator<Vec>() {
-            public int compare(Vec q, Vec w) {
-                if (q.x == w.x) return Long.compare(q.y, w.y);
-                return Long.compare(q.x, w.x);
-            }
-        });
-        boolean[] hull = new boolean[n];
-        LinkedList<Integer> stack = new LinkedList<>();
-        // upper hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) < 0) stack.removeFirst();
-            stack.addFirst(i);
-        }
-        for (int i : stack) hull[i] = true;
-        stack = new LinkedList<>();
-        // lower hull
-        for (int i = 0; i < n; i++) {
-            while (stack.size() >= 2 && a[stack.get(0)].cross(a[stack.get(1)], a[i]) > 0) stack.removeFirst();
-            stack.addFirst(i);
-        }
-        for (int i : stack) hull[i] = true;
-        List<Integer> ans = new ArrayList<>();
-        for (int i = 0; i < n; i++) if (hull[i]) ans.add(i);
+        int T = io.nextInt();
         StringBuilder out = new StringBuilder();
-        out.append(ans.size()).append('\n');
-        for (int i : ans) out.append(a[i].x).append(' ').append(a[i].y).append('\n');
+        while (T --> 0) {
+            int n = io.nextInt();
+            boolean ans = false;
+            while (n --> 0) ans |= io.nextInt() % 2 == 1;
+            out.append(ans ? "first" : "second").append('\n');
+        }
         io.print(out);
         io.close();
     }
-}
-
-class Vec {
-    public long x, y;
-    public Vec(long x, long y) {
-        this.x = x; this.y = y;
-    }
-    public Vec sub(Vec o) { return new Vec(x - o.x, y - o.y); }
-    public long cross(Vec o) { return x * o.y - y * o.x; }
-    public long cross(Vec o1, Vec o2) { return o1.sub(this).cross(o2.sub(this)); }
 }
 
 // credits to usaco.guide team for this template
