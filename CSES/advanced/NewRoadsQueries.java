@@ -19,7 +19,7 @@ public class NewRoadsQueries {
         }
         // jarnik's algorithm
         boolean[] vis = new boolean[n];
-        int[] par = new int[n], parval = new int[n], depth = new int[n];
+        int[] par = new int[n], parval = new int[n], depth = new int[n], cc = new int[n];
         for (int i = 0; i < n; i++) {
             if (vis[i]) continue;
             Queue<Edge> pq = new PriorityQueue<Edge>(Comparator.comparingInt(e -> e.w));
@@ -28,7 +28,8 @@ public class NewRoadsQueries {
                 Edge cur = pq.poll();
                 if (vis[cur.v]) continue;
                 vis[cur.v] = true; par[cur.v] = cur.u; parval[cur.v] = cur.w;
-                depth[cur.v] = cur.u == -1 ? 0 : depth[cur.u] + 1;
+                depth[cur.v] = depth[cur.u] + 1;
+                cc[cur.v] = cur.u == cur.v ? cur.u : cc[cur.u];
                 for (int whar = head[cur.v]; whar != -1; whar = nxt[whar]) {
                     Edge j = edges[whar];
                     if (!vis[j.v]) pq.offer(j);
@@ -46,7 +47,7 @@ public class NewRoadsQueries {
         StringBuilder out = new StringBuilder();
         while (q --> 0) {
             int u = io.nextInt() - 1, v = io.nextInt() - 1;
-            if (jmp[17][u] != jmp[17][v]) {
+            if (cc[u] != cc[v]) {
                 out.append("-1\n");
                 continue;
             }
