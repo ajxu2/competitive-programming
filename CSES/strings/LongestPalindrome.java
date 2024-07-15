@@ -7,9 +7,8 @@ public class LongestPalindrome {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
         String s = io.next();
-        StringBuilder whar = new StringBuilder();
-        for (int i = 0; i < s.length() - 1; i++) whar.append(s.charAt(i)).append('#');
-        whar.append(s.charAt(s.length() - 1));
+        StringBuilder whar = new StringBuilder("#");
+        for (char i : s.toCharArray()) whar.append(i).append('#');
         HashedString hs1 = new HashedString(whar.toString()), hs2 = new HashedString(whar.reverse().toString());
         int ansidx = -1, anslen = -1;
         for (int i = 0; i < hs1.length(); i++) {
