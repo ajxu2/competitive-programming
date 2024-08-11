@@ -54,13 +54,17 @@ def main():
     except CalledProcessError:
         return
     for cnt, (i, o) in enumerate(tests):
-        user_output = run.run_no_compile(args.file, capture_output=True, input=i.encode()).stdout.decode().strip()
+        process = run.run_no_compile(args.file, capture_output=True, input=i.encode())
+        user_output = process.stdout.decode().strip()
+        user_stderr = process.stderr.decode().strip()
         print(f'sample input:\n{i}\n\nsample output:\n{o}\n\nyour output:\n{user_output}\n')
         summary += f'Test #{cnt+1}: '
         if user_output == o:
             print(owo('OK\n', GREEN + BOLD))
             summary += owo('OK\n', GREEN + BOLD)
         else:
+            if user_stderr:
+                print(f'your program wrote this on standard error:\n{user_stderr}\n')
             print(owo('NOT OK\n', FAIL + BOLD))
             summary += owo('NOT OK\n', FAIL + BOLD)
 
