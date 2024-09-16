@@ -15,13 +15,15 @@ def compile_file(file, **kwargs):
         pass
     elif ext == '.c':
         return run(['gcc', '-O2', '-DLOCAL', '-o', str(p.with_suffix('.out')), file], **kwargs)
+    elif ext == '.rs':
+        return run(['rustc', '-o', str(p.with_suffix('.out')), file], **kwargs)
     else:
         raise NotImplementedError
 
 def run_no_compile(file, **kwargs):
     p = Path(file)
     ext = p.suffix
-    if ext == '.cpp' or ext == '.c':
+    if ext == '.cpp' or ext == '.c' or ext == '.rs':
         return run([str(p.with_suffix('.out').absolute())], **kwargs)
     elif ext == '.java':
         return run(['java', '-cp', str(p.parent), p.stem], **kwargs)
