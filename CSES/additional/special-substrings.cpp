@@ -1,16 +1,18 @@
 // created: 10-29-2024 Tue 12:45 AM
-
+ 
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 using ll = long long;
 using ull = unsigned long long;
 template<class T> using V = vector<T>;
-
+ 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
+    mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+    uniform_int_distribution<ull> dist(1, 10'000'000'000'000'000LL);
     V<ull> hsh(26);
-    for (int i = 0; i < 26; i++) hsh[i] = 1LL << i;
+    for (ull& i : hsh) i = dist(rng);
     string s; cin >> s;
     V<bool> used(26, false);
     for (char i : s) used[i - 'a'] = true;
