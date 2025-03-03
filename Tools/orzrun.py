@@ -17,6 +17,10 @@ END = '\033[0m'
 def owo(text, color):
     return f'{color}{text}{END}'
 
+def cf_check_equality(text1, text2):
+    ws_annihilator = re.compile(r'\s+')
+    return ws_annihilator.sub(' ', text1) == ws_annihilator.sub(' ', text2)
+
 def fetch_test_cases(problem):
     m = re.fullmatch(r'(\d+)([a-z]\d?)', problem, re.I)
     if not m:
@@ -27,7 +31,7 @@ def fetch_test_cases(problem):
     # get input output pairs
     raw_inputs = b.find_all('div', attrs={'class': 'input'})
     raw_outputs = b.find_all('div', attrs={'class': 'output'})
-    res = [tuple(re.sub(r'\s*\n\s*', r'\n', j.pre.get_text('\n', strip=True)) for j in i) for i in zip(raw_inputs, raw_outputs)]
+    res = [tuple(j.pre.get_text('\n', strip=True) for j in i) for i in zip(raw_inputs, raw_outputs)]
     
     return res
 
@@ -59,7 +63,7 @@ def main():
         user_stderr = process.stderr.decode().strip()
         print(f'sample input:\n{i}\n\nsample output:\n{o}\n\nyour output:\n{user_output}\n')
         summary += f'Test #{cnt+1}: '
-        if user_output == o:
+        if cf_check_equality(user_output, o):
             print(owo('OK\n', GREEN + BOLD))
             summary += owo('OK\n', GREEN + BOLD)
         else:
