@@ -62,13 +62,18 @@ def main():
         user_output = process.stdout.decode().strip()
         user_stderr = process.stderr.decode().strip()
         print(f'sample input:\n{i}\n\nsample output:\n{o}\n\nyour output:\n{user_output}\n')
+        if user_stderr:
+            print(f'your program wrote this on standard error:\n{user_stderr}\n')
         summary += f'Test #{cnt+1}: '
         if cf_check_equality(user_output, o):
-            print(owo('OK\n', GREEN + BOLD))
-            summary += owo('OK\n', GREEN + BOLD)
+            if process.returncode == 0:
+                print(owo('OK\n', GREEN + BOLD))
+                summary += owo('OK\n', GREEN + BOLD)
+            else:
+                print(f'exit code is {process.returncode}\n')
+                print(owo('NOT OK\n', FAIL + BOLD))
+                summary += owo('NOT OK\n', FAIL + BOLD)
         else:
-            if user_stderr:
-                print(f'your program wrote this on standard error:\n{user_stderr}\n')
             print(owo('NOT OK\n', FAIL + BOLD))
             summary += owo('NOT OK\n', FAIL + BOLD)
 

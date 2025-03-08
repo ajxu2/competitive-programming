@@ -8,7 +8,7 @@ def compile_file(file, **kwargs):
     p = Path(file)
     ext = p.suffix
     if ext == '.cpp':
-        return run(['g++', '-std=c++20', '-O2', '-DLOCAL', '-Wall', '-Wextra', '-fsanitize=undefined', '-o', str(p.with_suffix('.out')), file], **kwargs)
+        return run(['g++', '-std=c++20', '-O2', '-DLOCAL', '-Wall', '-Wextra', '-fsanitize=undefined', '-fsanitize=address', '-g', '-o', str(p.with_suffix('.out')), file], **kwargs)
     elif ext == '.java':
         return run(['javac', file], **kwargs)
     elif ext == '.py':
@@ -24,7 +24,7 @@ def run_no_compile(file, **kwargs):
     p = Path(file)
     ext = p.suffix
     if ext == '.cpp' or ext == '.c' or ext == '.rs':
-        return run([str(p.with_suffix('.out').absolute())], **kwargs)
+        return run([str(p.with_suffix('.out').absolute())], env={'ASAN_OPTIONS': 'detect_leaks=0'}, **kwargs)
     elif ext == '.java':
         return run(['java', '-cp', str(p.parent), p.stem], **kwargs)
     elif ext == '.py':
