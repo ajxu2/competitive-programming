@@ -1,18 +1,39 @@
-// created: 04-17-2024 Wed 11:23 PM
+// created: 04-20-2024 Sat 11:25 PM
 
 import java.util.*;
 import java.io.*;
 
-public class XorPyramid {
+public class SOSBitProblem {
     static FastIO io = new FastIO();
+    static final int LG = 20;
     public static void main(String[] args) throws IOException {
         int n = io.nextInt();
-        int ans = 0;
+        int[] a = new int[1<<LG], vals = new int[n];
         for (int i = 0; i < n; i++) {
-            int nxt = io.nextInt();
-            if ((i | n - 1 - i) == n - 1) ans ^= nxt;
+            vals[i] = io.nextInt();
+            a[vals[i]]++;
         }
-        io.println(ans);
+        // SOS DP!!!
+        int[][] dp = new int[LG][1<<LG], DP = new int[LG][1<<LG];
+        for (int i = 0; i < 1<<LG; i++) {
+            dp[0][i] = a[i]; DP[0][i] = a[i];
+            if ((i & 1) == 1) dp[0][i] += a[i ^ 1];
+            else DP[0][i] += a[i ^ 1];
+        }
+        for (int i = 1; i < LG; i++) {
+            for (int j = 0; j < 1<<LG; j++) {
+                if ((j & (1 << i)) != 0) {
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j^(1<<i)];
+                    DP[i][j] = DP[i-1][j];
+                } else {
+                    dp[i][j] = dp[i-1][j];
+                    DP[i][j] = DP[i-1][j] + DP[i-1][j^(1<<i)];
+                }
+            }
+        }
+        StringBuilder out = new StringBuilder();
+        for (int i : vals) out.append(dp[LG-1][i]).append(' ').append(DP[LG-1][i]).append(' ').append(n - dp[LG-1][(1<<LG)-1&~i]).append('\n');
+        io.print(out);
         io.close();
     }
 }

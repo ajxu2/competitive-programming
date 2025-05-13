@@ -3,7 +3,7 @@
 import java.util.*;
 import java.io.*;
 
-public class SubarrayDistinctValues {
+public class DistinctValuesSubarrays2 {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
         int n = io.nextInt(), k = io.nextInt();

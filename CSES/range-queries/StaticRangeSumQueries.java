@@ -3,7 +3,7 @@
 import java.util.*;
 import java.io.*;
 
-public class StaticRangeSum {
+public class StaticRangeSumQueries {
     public static void main(String[] args) throws IOException {
         Kattio io = new Kattio();
         int n = io.nextInt(), q = io.nextInt();

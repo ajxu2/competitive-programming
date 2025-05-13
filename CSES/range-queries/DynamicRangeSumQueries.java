@@ -3,49 +3,47 @@
 import java.util.*;
 import java.io.*;
 
-public class DynamicRangeMin {
+public class DynamicRangeSumQueries {
     public static void main(String[] args) throws IOException {
         FastIO io = new FastIO();
         int n = io.nextInt(), q = io.nextInt();
-        Segtree s = new Segtree(n);
-        for (int i = 0; i < n; i++) s.upd(i, io.nextInt());
+        BIT b = new BIT(n);
+        for (int i = 0; i < n; i++) b.upd(i+1, io.nextInt());
         for (int i = 0; i < q; i++) {
             int t = io.nextInt();
-            if (t == 1) s.upd(io.nextInt()-1, io.nextInt());
-            else io.println(s.qry(io.nextInt()-1, io.nextInt()-1));
+            if (t == 1) b.upd(io.nextInt(), io.nextInt());
+            else io.println(b.qry(io.nextInt(), io.nextInt()));
         }
         io.close();
     }
-    static class Segtree {
+    static class BIT {
         private long[] tree;
         public int n;
-        // the operator used in the segtree (must be associative and commutative)
-        public long cmb(long a, long b) { return Math.min(a, b); }
-        // the identity of the operator: cmb(id, x) = cmb(x, id) = x
-        private final long id = Long.MAX_VALUE;
-        // construct segment tree with n pieces of data
-        public Segtree(int n) {
+        // construct BIT with n pieces of data
+        public BIT(int n) {
             this.n = n;
-            tree = new long[2*n];
-            Arrays.fill(tree, id);
+            tree = new long[n+1];
         }
-        // update value at position i to v
+        // update value at position i to v (1-indexed)
         public void upd(int i, long v) {
-            i += n; tree[i] = v;
-            while (i > 1) {
-                i /= 2; tree[i] = cmb(tree[2*i], tree[2*i+1]);
+            long d = v - qry(i, i);
+            while (i <= n) {
+                tree[i] += d;
+                i += i & -i;
             }
         }
-        // query the range [a, b]
-        public long qry(int a, int b) {
-            long res = id;
-            a += n; b += n;
-            while (a <= b) {
-                if (a % 2 == 1) res = cmb(res, tree[a++]);
-                if (b % 2 == 0) res = cmb(res, tree[b--]);
-                a /= 2; b /= 2;
+        // query the sum from [1, a] (1-indexed)
+        public long qry(int a) {
+            long res = 0;
+            while (a > 0) {
+                res += tree[a];
+                a -= a & -a;
             }
             return res;
+        }
+        // query the sum from [a, b] (a and b are 1-indexed)
+        public long qry(int a, int b) {
+            return qry(b) - qry(a-1);
         }
     }
     // credits to usaco.guide team for this template

@@ -1,26 +1,16 @@
-// created: 03-29-2024 Fri 12:45 PM
+// created: 04-17-2024 Wed 11:23 PM
 
 import java.util.*;
 import java.io.*;
 
-public class BeautifulSubgrids {
+public class XorPyramidPeak {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
         int n = io.nextInt();
-        BitSet[] a = new BitSet[n];
+        int ans = 0;
         for (int i = 0; i < n; i++) {
-            a[i] = new BitSet();
-            String s = io.next();
-            for (int j = 0; j < n; j++) if (s.charAt(j) == '1') a[i].flip(j);
-        }
-        long ans = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = i+1; j < n; j++) {
-                BitSet tmp = (BitSet)a[i].clone();
-                tmp.and(a[j]);
-                int tmp2 = tmp.cardinality();
-                ans += (long)tmp2 * (tmp2-1) / 2;
-            }
+            int nxt = io.nextInt();
+            if ((i | n - 1 - i) == n - 1) ans ^= nxt;
         }
         io.println(ans);
         io.close();

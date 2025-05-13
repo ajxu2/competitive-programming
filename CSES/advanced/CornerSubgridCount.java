@@ -1,36 +1,29 @@
-// created: 01-06-2024 Sat 10:56 PM
+// created: 03-29-2024 Fri 12:45 PM
 
 import java.util.*;
 import java.io.*;
 
-public class FourSum {
+public class CornerSubgridCount {
     static FastIO io = new FastIO();
     public static void main(String[] args) throws IOException {
-        int n = io.nextInt(), x = io.nextInt();
-        int[] a = new int[n];
-        for (int i = 0; i < n; i++) a[i] = io.nextInt();
-        Map<Integer, Pair> m = new HashMap<>();
-        // in the below loops, we check if i and j can be the third and fourth elements
+        int n = io.nextInt();
+        BitSet[] a = new BitSet[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = new BitSet();
+            String s = io.next();
+            for (int j = 0; j < n; j++) if (s.charAt(j) == '1') a[i].flip(j);
+        }
+        long ans = 0;
         for (int i = 0; i < n; i++) {
             for (int j = i+1; j < n; j++) {
-                if (m.containsKey(x - a[i] - a[j])) {
-                    Pair p = m.get(x - a[i] - a[j]);
-                    io.println((p.f+1) + " " + (p.s+1) + " " + (i+1) + " " + (j+1));
-                    io.close();
-                    return;
-                }
+                BitSet tmp = (BitSet)a[i].clone();
+                tmp.and(a[j]);
+                int tmp2 = tmp.cardinality();
+                ans += (long)tmp2 * (tmp2-1) / 2;
             }
-            for (int j = 0; j < i; j++) m.put(a[j] + a[i], new Pair(j, i));
         }
-        io.println("IMPOSSIBLE");
+        io.println(ans);
         io.close();
-    }
-}
-
-class Pair {
-    public int f, s;
-    public Pair(int f, int s) {
-        this.f = f; this.s = s;
     }
 }
 
