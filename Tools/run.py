@@ -8,7 +8,7 @@ def compile_file(file, **kwargs):
     p = Path(file)
     ext = p.suffix
     if ext == '.cpp':
-        return run(['g++', '-std=c++20', '-O2', '-DLOCAL', '-Wall', '-Wextra', '-fsanitize=undefined', '-fsanitize=address', '-g', '-o', str(p.with_suffix('.out')), file], **kwargs)
+        return run(['g++', '-std=c++23', '-O2', '-DLOCAL', '-Wall', '-Wextra', '-fsanitize=undefined', '-fsanitize=address', '-g', '-o', str(p.with_suffix('.out')), file], **kwargs)
     elif ext == '.java':
         return run(['javac', file], **kwargs)
     elif ext == '.py':
