@@ -25,7 +25,7 @@ def fetch_test_cases(problem):
     m = re.fullmatch(r'(\d+)([a-z]\d?)', problem, re.I)
     if not m:
         raise ValueError(f'Invalid Codeforces problem ID: {problem}')
-    req = requests.get(f'https://mirror.codeforces.com/contest/{m.group(1)}/problem/{m.group(2)}', headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0'}) # trol
+    req = requests.get(f'https://codeforces.com/contest/{m.group(1)}/problem/{m.group(2)}', headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:147.0) Gecko/20100101 Firefox/147.0'}) # trol
     b = BeautifulSoup(req.text, 'html.parser')
 
     # get input output pairs
