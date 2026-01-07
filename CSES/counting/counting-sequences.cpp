@@ -39,6 +39,8 @@ int main() {
         int mult = i % 2 == 0 ? 1 : -1;
         (ans += choose(k, i) * fexp(k - i, n) * mult) %= MOD;
     }
+    if (ans < 0)
+        ans += MOD;
     cout << ans << '\n';
     return 0;
 }
